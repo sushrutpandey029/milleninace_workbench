@@ -1,0 +1,67 @@
+{{>header user=user}}
+
+{{>verticalnav}}
+
+<div class="hk-pg-wrapper">
+    <div class="container-xxl">
+        <header class="invoice-header">
+            <div class="d-flex align-items-center">
+                <a class="invoiceapp-title link-dark" data-bs-toggle="dropdown" href="#" role="button"
+                    aria-haspopup="true" aria-expanded="false">
+                    <h1>Pay Department</h1>
+
+                    {{#if error}}
+                        {{#each error}}
+                            <div class="alert alert-danger" role="alert">
+                                {{this}}
+                            </div>
+                        {{/each}}
+                    {{/if}}
+
+                    {{#if success}}
+                        {{#each success}}
+                            <div class="alert alert-success" role="alert">
+                                {{this}}
+                            </div>
+                        {{/each}}
+                    {{/if}}
+
+                    <script>
+                        window.setTimeout(function () {
+                            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                                $(this).remove();
+                            });
+                        }, 3000);
+                    </script>
+                </a>
+            </div>
+        </header>
+        <br>
+        <form id="deptForm" action="/adddeptwallet" method="post">
+            <!-- Department -->
+           
+                <input type="text" class="form-control" id="department_name" name="department_name" value="{{user.department}}" required  hidden>
+                <input type="text" class="form-control" id="department_id" name="department_id" value="{{user.id}}" required  hidden>
+
+
+            <!-- Department Head Name -->
+            <div class="mb-3">
+                <label for="head_name" class="form-label">Department Head Name</label>
+                <input type="text" class="form-control" id="head_name" name="head_name" value="{{user.dept_head_name}}" required>
+            </div>
+
+            <!-- amount -->
+            <div class="mb-3">
+                <label for="balance" class="form-label">Amount</label>
+                <input type="balance" class="form-control" id="balance" name="balance" required>
+            </div>
+
+
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary mt-3">Submit</button>
+        </form>
+    </div>
+</div>
+
+{{>footer}}
