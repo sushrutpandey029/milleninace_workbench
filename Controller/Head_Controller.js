@@ -6,6 +6,8 @@ import validator from "validator";
 import path from "path";
 import { fileURLToPath } from "url";
 import DepartmentWallet from "../Model/DepartmentWallet .js";
+import TransactionRecord from "../Model/TransactionRecord.js";
+import { where } from "sequelize";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -177,23 +179,121 @@ export const headnewdashboard = async (req, res) => {
     }
     console.log("newuser", newuser);
     const id = newuser.id;
-    const dept_name = newuser.dept_name;
 
-    const userdata = await DepartmentWallet.findAll({
-      where: { department_id: id, department_name: dept_name },
+    const userdata = await DepartmentWallet.findOne({
+      attributes: ["total_balance"],
+      where: { department_id: id },
+      order: [["id", "DESC"]],
     });
-    console.log("userdata", userdata);
-    
-    const totalwallet = userdata.reduce((sum,balance) => {
-        return sum + parseFloat(balance.dataValues.balance)
-    },0);
 
-    console.log("totalwallet",totalwallet);
+    const totalwallet = userdata.dataValues.total_balance;
 
-    // Pass user data to the view
-    res.render("headdashboard", { newuser ,totalwallet});
+    // Pass user data to the view 
+    res.render("headdashboard", { newuser, totalwallet });
   } catch (error) {
     console.error("Error in Admindashboard:", error);
     return res.status(500).send("Internal Server Error");
+  }
+};
+
+export const ProjectTransactionPage = async (req, res) => {
+  try {
+    return res.render("project_transaction");
+  } catch (err) {
+    console.log("err in Project Transaction Page", err.message);
+  }
+};
+
+export const ProjectTransaction = async (req, res) => {
+  try {
+    const { project_name, dept_to, purpose, amount, transaction_date } =
+      req.body;
+
+    if (!project_name || !dept_to || !purpose || !amount || !transaction_date) {
+      return req.flash("error", "all fields are required");
+    }
+
+    const dept_from_id = req.session.user.id;
+    const dept_from = req.session.user.dept_name;
+
+    // taking department to if from department head table
+    const id =await Head.findOne({
+      attributes:["id"],
+      where:{department:dept_to}
+    })
+
+    const dept_to_id = id.dataValues.id;
+
+    //fetching total balance of departfrom 
+
+    const deptFrom =await DepartmentWallet.findOne({
+      attributes:["id","total_balance"],
+      where:{department_id :dept_from_id },
+      order:[["id","DESC"]]
+    })
+
+    console.log("deptFrom",deptFrom);
+
+   let deptFrom_totalBalance = deptFrom.dataValues.total_balance || 0;
+   let deptFrom_id = deptFrom.dataValues.id;
+
+   //fetching total balance of department to  
+
+   const deptTo =await DepartmentWallet.findOne({
+    attributes:["id","total_balance"],
+    where:{department_id :dept_to_id },
+    order:[["id","DESC"]]
+  })
+
+ let deptTo_totalBalance = deptTo.dataValues.total_balance || 0;
+ let deptTo_id = deptTo.dataValues.id;
+
+ console.log("deptFrom_totalBalance",deptFrom_totalBalance);
+ console.log("deptTo_totalBalance",deptTo_totalBalance);
+
+ //handling the logic to subtract and add wallet value
+
+ deptFrom_totalBalance = deptFrom_totalBalance - amount;
+ deptTo_totalBalance = parseFloat(deptTo_totalBalance) + parseFloat(amount);
+
+    const data = new TransactionRecord({
+      project_name,
+      dept_from_id,
+      dept_to,
+      dept_from,
+      purpose,
+      amount,
+      transaction_date,
+    });
+
+    const resp = await data.save();
+
+    if (!resp) {
+      return res.flash(
+        "error",
+        "error in saving to database, please try again."
+      );
+    }
+
+    // updating the wallet of both user sender and receiver
+
+     await DepartmentWallet.update(
+     {total_balance : deptTo_totalBalance},
+     { where:{id : deptTo_id}},
+    )
+
+    await DepartmentWallet.update(
+      {total_balance : deptFrom_totalBalance},
+      { where:{id : deptFrom_id}},
+     )
+
+
+    res.redirect("/headnewdashboard");
+  } catch (err) {
+    console.log("err in ProjectTransaction", err.message);
+    return res.status(500).send({
+      message: "Internal server error",
+      err: err.message,
+    });
   }
 };

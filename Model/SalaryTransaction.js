@@ -1,41 +1,45 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../Database/MySql_connection.js";
 
-const DepartmentWallet = sequelize.define(
-  "department_wallet",
+const AdminWallet = sequelize.define(
+  "salary_transaction",
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    department_id: {
+    dept_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    department_name: {
+    dept: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    head_name:{
-        type:DataTypes.STRING,
-        allowNull:false
+    dept_head_name: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    balance: {
+    employee: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    salary: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
       defaultValue: 0.0,
     },
-    total_balance:{
-      type : DataTypes.DECIMAL(10,2),
-      allowNull:true,
-      defaultValue: 0.0
-    }
+    salary_date: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0.0,
+    },
   },
   {
-    tableName: "department_wallet",
+    tableName: "salary_transaction",
     timestamps: true,
   }
 );
 
-export default DepartmentWallet;
+export default AdminWallet;

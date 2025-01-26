@@ -1,6 +1,6 @@
-{{>header user=user}}
+{{>header user=user totalBalance=totalBalance}}
 
-{{>verticalnav}}
+{{>verticalnav user=user}}
 
 <div class="hk-pg-wrapper">
     <div class="container-xxl">
@@ -37,11 +37,11 @@
             </div>
         </header>
         <br>
-        <form id="total_balance" action="/adminwallet" method="post">
+        <form id="balance" action="/adminwallet" method="post">
            
             <div class="mb-3">
-                <label for="total_balance" class="form-label">Add Wallet Amount</label>
-                <input type="number" class="form-control" id="total_balance" name="total_balance" required>
+                <label for="balance" class="form-label">Add Wallet Amount</label>
+                <input type="number" class="form-control" id="balance" name="balance" required>
             </div>
 
            

@@ -9,6 +9,11 @@ const AdminWallet = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
+    balance : {
+      type : DataTypes.DECIMAL(10,2),
+      allowNull : false,
+      defaultValue: 0.0
+    },
     total_balance: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,

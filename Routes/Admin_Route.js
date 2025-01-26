@@ -10,7 +10,7 @@ import {
   AdminWalletPage,
   getTotalWallet,
   PayDeptPage,
-  AddPaymentToDept,
+  // AddPaymentToDept,
   AddDeptWallet
 } from "../Controller/Admin_Cntrl.js";
 
@@ -21,6 +21,8 @@ import {
   head_login,
   HeadLogin,
   headnewdashboard,
+  ProjectTransactionPage,
+  ProjectTransaction
 } from "../Controller/Head_Controller.js";
 
 import { isAuthenticated } from "../Middlewares/isAuthenticated.js"; // Adjust path if necessary
@@ -41,7 +43,7 @@ router.post("/adminwallet",Admin_Wallet);
 router.get("/wallet",AdminWalletPage);
 router.get("/totalwallet",getTotalWallet);
 router.get("/paydept/:id",PayDeptPage);
-router.post("/addpayment/:id",AddPaymentToDept);
+// router.post("/addpayment/:id",AddPaymentToDept);
 router.post("/adddeptwallet",AddDeptWallet)
 
 router.get("/dashboard", isAuthenticated, Admindashboard);
@@ -50,6 +52,15 @@ router.get("/logout", AdminLogout);
 router.post("/saveDeptHead", saveDeptHead);
 router.get("/addhead", addhead);
 router.get("/getDeptHeads", getDeptHeads);
+
+  // Admin
+
+
+
+  // Department Head
+
+  router.get("/project-transaction",ProjectTransactionPage)
+  router.post("/project-transaction",ProjectTransaction)
 
 
 export default router;

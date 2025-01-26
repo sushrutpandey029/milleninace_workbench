@@ -133,19 +133,20 @@ export const Admindashboard = async (req, res) => {
       return res.redirect("/");
     }
 
-    const adminWallet = await AdminWallet.findAll();
+    const adminWallet = await AdminWallet.findOne({
+      attributes: ["total_balance"],
+      order: [["id", "DESC"]],
+    });
 
-    const totalBalance = adminWallet.reduce((sum, wallet) => {
-      return sum + parseFloat(wallet.dataValues.total_balance);
-    }, 0);
-
-    console.log("total bal", totalBalance);
+    const totalBalance = adminWallet?.dataValues?.total_balance;
 
     // Pass user data to the view
     res.render("admin_dashboard", { user, totalBalance });
   } catch (error) {
     console.error("Error in Admindashboard:", error);
-    return res.status(500).send("Internal Server Error");
+    return res
+      .status(500)
+      .send({ message: "Internal Server Error", err: error.message });
   }
 };
 
@@ -167,18 +168,26 @@ export const AdminWalletPage = async (req, res) => {
 
 export const Admin_Wallet = async (req, res) => {
   try {
-    const { total_balance } = req.body;
+    const { balance } = req.body;
 
-    if (!total_balance) {
-      return res.status(400).json({
-        success: false,
-        message: "all fields are required",
-        data: total_balance,
-      });
+    if (!balance) {
+      req.flash("error", "balance is required");
+      return;
     }
 
-    const balance = new AdminWallet({ total_balance });
-    const response = await balance.save();
+    let totalWallet = await AdminWallet.findOne({
+      attributes: ["total_balance"],
+      order: [["id", "DESC"]],
+    });
+
+    console.log("total wallet", totalWallet);
+
+    totalWallet =
+      (parseFloat(totalWallet?._previousDataValues?.total_balance) || 0) +
+      parseFloat(balance);
+
+    const amount = new AdminWallet({ balance, total_balance: totalWallet });
+    const response = await amount.save();
 
     if (!response) {
       return res.status(500).json({
@@ -232,19 +241,19 @@ export const PayDeptPage = async (req, res) => {
   }
 };
 
-export const AddPaymentToDept = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = await Head.findByPk(id);
-  } catch (err) {
-    console.log("err in admin wallet controller".err);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      err: err.message,
-    });
-  }
-};
+// export const AddPaymentToDept = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const user = await Head.findByPk(id);
+//   } catch (err) {
+//     console.log("err in admin wallet controller".err);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal server error",
+//       err: err.message,
+//     });
+//   }
+// };
 
 export const AddDeptWallet = async (req, res) => {
   try {
@@ -257,16 +266,50 @@ export const AddDeptWallet = async (req, res) => {
       return;
     }
 
+    //subtracting the paid amount from admin_wallet
+    let totalBalance = await AdminWallet.findOne({
+      attributes: ["total_balance", "id"],
+      order: [["id", "DESC"]],
+    });
+
+    // handling the total balance of a department wallet
+
+    const dept = await DepartmentWallet.findOne({
+      attributes:["total_balance"],
+      where:{department_id },
+      order: [["id", "DESC"]],
+    });
+
+    let dept_totalBalance = dept?.dataValues?.total_balance || 0;
+    let parsed = parseFloat(dept_totalBalance);
+    parsed += parseFloat(balance);
+
+    console.log("department_id", department_id);
+    console.log("dpt", dept);
+
+    const ids = totalBalance?.dataValues?.id;
+
+    totalBalance =
+      parseFloat(totalBalance?.dataValues?.total_balance) - parseFloat(balance);
+
+    await AdminWallet.update(
+      { total_balance: totalBalance },
+      {
+        where: { id: ids },
+      }
+    );
+
     const data = new DepartmentWallet({
       department_id,
       department_name,
+      total_balance:parsed,
       head_name,
       balance,
     });
 
     const response = await data.save();
-    return res.redirect("/dashboard");
 
+    return res.redirect("/dashboard");
   } catch (err) {
     console.log("err in admin wallet controller".err);
     return res.status(500).json({
