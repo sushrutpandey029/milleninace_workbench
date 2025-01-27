@@ -8,6 +8,7 @@ import sequelize from "./Database/MySql_connection.js";
 import route from "./Routes/Admin_Route.js";
 import { fileURLToPath } from "url";
 import { EventEmitter } from "events";
+import mysql from "mysql2"; // Import mysql2
 import flash from "connect-flash";
 
 // Increase the max listeners to prevent warnings
@@ -26,16 +27,29 @@ const __dirname = path.dirname(__filename);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Configure MySQL connection pool for session store
+const sessionConnectionPool = mysql.createPool({
+  host: "68.178.173.163",
+  port: 3306,
+  user: "milleniancecom_cidb",
+  password: "HL+9@l8Mfd3w",
+  database: "milleniancecom_cidb",
+  waitForConnections: true,
+  connectionLimit: 10,
+  connectTimeout: 10000,
+  acquireTimeout: 10000,
+});
+
 // Configure session store
 const MySQLStoreSession = MySQLStore(session);
 
-const sessionStore = new MySQLStoreSession({
-  host: "127.0.0.1",
-  port: 3306,
-  user: "root",
-  password: "vivek",
-  database: "Milleniance_Account",
-});
+const sessionStore = new MySQLStoreSession(
+  {
+    expiration: 86400000, // 1 day
+    checkExpirationInterval: 900000, // 15 minutes
+  },
+  sessionConnectionPool // Use the raw mysql2 connection pool
+);
 
 app.use(
   session({
@@ -55,22 +69,31 @@ app.use(flash());
 
 // Middleware to pass flash messages to views
 app.use((req, res, next) => {
-    res.locals.successMessage = req.flash("success");
-    res.locals.errorMessage = req.flash("error");
-    next();
+  res.locals.successMessage = req.flash("success");
+  res.locals.errorMessage = req.flash("error");
+  next();
 });
 
 // Set up the view engine
 app.set("view engine", "html");
 app.engine("html", hbs.__express);
 
-app.set("Views", path.join(__dirname, "Views"));
+// Ensure correct views directory
+app.set("views", path.join(__dirname, "Views"));
+app.use(express.static(path.join(__dirname, "Views", "public")));
+app.use("/css", express.static(path.join(__dirname, "Views", "public", "assets", "css")))
 // Static files
-app.use(express.static(path.join(__dirname, 'Views', 'public', 'assets')));
-
-hbs.registerPartials(path.join(__dirname, 'Views','commonTemplate'));
-
+app.use(express.static(path.join(__dirname, "Views", "public", "assets")));
+hbs.registerPartials(path.join(__dirname, "Views", "commonTemplate"));
+app.use("/images", express.static(path.join(__dirname, "Views", "public", "assets", "images"))); // Serve images
+app.use("/js", express.static(path.join(__dirname, "Views", "public", "assets", "js"))); // Serve JS files
 app.use("/images", express.static(path.join(__dirname, "Views", "public", "images")));
+
+// Static files
+ // Serve all files in the public folder
+; // Serve CSS files
+
+
 
 // Routes
 app.use("/", route);
@@ -85,7 +108,7 @@ const startServer = () => {
       });
     })
     .catch((err) => {
-      console.error("MySQL connection failed:", err);
+      console.error("MySQL connection failed. Error details:", err);
     });
 };
 

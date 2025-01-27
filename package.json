@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "dev":"npx node server.js -e js,hbs,html"
+    "start": "nodemon server.js",
+    "dev":"node server.js"
   },
   
   "author": "",
