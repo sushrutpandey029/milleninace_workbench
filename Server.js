@@ -80,12 +80,20 @@ app.engine("html", hbs.__express);
 
 // Ensure correct views directory
 app.set("views", path.join(__dirname, "Views"));
-
+app.use(express.static(path.join(__dirname, "Views", "public")));
+app.use("/css", express.static(path.join(__dirname, "Views", "public", "assets", "css")))
 // Static files
 app.use(express.static(path.join(__dirname, "Views", "public", "assets")));
 hbs.registerPartials(path.join(__dirname, "Views", "commonTemplate"));
-
+app.use("/images", express.static(path.join(__dirname, "Views", "public", "assets", "images"))); // Serve images
+app.use("/js", express.static(path.join(__dirname, "Views", "public", "assets", "js"))); // Serve JS files
 app.use("/images", express.static(path.join(__dirname, "Views", "public", "images")));
+
+// Static files
+ // Serve all files in the public folder
+; // Serve CSS files
+
+
 
 // Routes
 app.use("/", route);
