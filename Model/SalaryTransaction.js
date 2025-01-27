@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../Database/MySql_connection.js";
 
-const AdminWallet = sequelize.define(
+const SalaryTransaction = sequelize.define(
   "salary_transaction",
   {
     id: {
@@ -31,9 +31,8 @@ const AdminWallet = sequelize.define(
       defaultValue: 0.0,
     },
     salary_date: {
-      type: DataTypes.DECIMAL(10, 2),
+      type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: 0.0,
     },
   },
   {
@@ -42,4 +41,4 @@ const AdminWallet = sequelize.define(
   }
 );
 
-export default AdminWallet;
+export default SalaryTransaction;

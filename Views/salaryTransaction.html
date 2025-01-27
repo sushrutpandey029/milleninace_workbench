@@ -8,7 +8,7 @@
             <div class="d-flex align-items-center">
                 <a class="invoiceapp-title link-dark" data-bs-toggle="dropdown" href="#" role="button"
                     aria-haspopup="true" aria-expanded="false">
-                    <h1>Project Transaction</h1>
+                    <h1>Salary Transaction</h1>
 
                     {{#if error}}
                         {{#each error}}
@@ -37,42 +37,44 @@
             </div>
         </header>
         <br>
-        <form id="deptForm" action="/project-transaction" method="post">
+        <form id="deptForm" action="/salary-transaction" method="post">
 
-             <!-- Project Name -->
-             <div class="mb-3">
-                <label for="project_name" class="form-label">Project Name</label>
-                <input type="text" class="form-control" id="project_name" name="project_name" required>
-            </div>
 
-            <!-- Department To -->
+            <!-- Department -->
             <div class="mb-3">
-                <label for="dept_to" class="form-label">Department</label>
-                <select class="form-select" id="dept_to" name="dept_to" required>
+                <label for="dept" class="form-label">Department</label>
+                <select class="form-select" id="dept" name="dept" required>
                     <option value="" disabled selected>Select Department</option>
                     <option value="Software Development">Software Development</option>
                     <option value="Website Development">Website Development</option>
                     <option value="E-commerce Development">E-commerce Development</option>
                     <option value="Mobile Development">Mobile Development</option>
+                    <option value="Sales">Sales</option>
                 </select>
             </div>
 
-            <!-- Purpose -->
+            <!-- department head name -->
             <div class="mb-3">
-                <label for="purpose" class="form-label">Purpose</label>
-                <input type="text" class="form-control" id="purpose" name="purpose" required>
+                <label for="dept_head_name" class="form-label">Dept. Head Name</label>
+                <input type="text" class="form-control" id="dept_head_name" name="dept_head_name" required>
             </div>
 
-            <!-- amount -->
+            <!-- employee name -->
             <div class="mb-3">
-                <label for="amount" class="form-label">Amount</label>
-                <input type="number" class="form-control" id="amount" name="amount" required>
+                <label for="employee" class="form-label">Employee Name</label>
+                <input type="text" class="form-control" id="employee" name="employee" required>
             </div>
 
-            <!-- Transaction Date -->
+            <!-- Salary Amount -->
             <div class="mb-3">
-                <label for="transaction_date" class="form-label">transaction date</label>
-                <input type="date" class="form-control" id="transaction_date" name="transaction_date" required>
+                <label for="salary" class="form-label">Salary Amount</label>
+                <input type="number" class="form-control" id="salary" name="salary" required>
+            </div>
+
+             <!-- Salary Date -->
+             <div class="mb-3">
+                <label for="salary_date" class="form-label">Salary Date</label>
+                <input type="date" class="form-control" id="salary_date" name="salary_date" required>
             </div>
 
             <!-- Submit Button -->

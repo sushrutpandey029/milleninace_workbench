@@ -138,7 +138,7 @@ export const Admindashboard = async (req, res) => {
       order: [["id", "DESC"]],
     });
 
-    const totalBalance = adminWallet?.dataValues?.total_balance;
+    const totalBalance = adminWallet?.dataValues?.total_balance || 0.0;
 
     // Pass user data to the view
     res.render("admin_dashboard", { user, totalBalance });
@@ -160,6 +160,98 @@ export const AdminLogout = (req, res) => {
     res.clearCookie("connect.sid"); // Clear the session cookie
     return res.redirect("/");
   });
+};
+
+export const saveDeptHead = async (req, res) => {
+  try {
+    const {
+      department,
+      dept_head_name,
+      email,
+      phone,
+      designation,
+      password,
+      employes,
+    } = req.body;
+
+    // Validate required fields
+    if (
+      !department ||
+      !dept_head_name ||
+      !email ||
+      !phone ||
+      !designation ||
+      !password
+    ) {
+      req.flash("error", "All fields are required");
+    }
+
+    // Validate email format
+    if (!validator.isEmail(email)) {
+      req.flash("error", "Invalid email format");
+    }
+
+    // Validate phone format (e.g., 10-digit Indian phone number)
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(phone)) {
+      req.flash(
+        "error",
+        "Invalid phone number. It should be a 10-digit number starting with 6-9."
+      );
+    }
+
+    const employeeData = employes ? employes : [];
+
+    // Hash password before saving
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Save the department head and employees
+    const newDeptHead = await Head.create({
+      department,
+      dept_head_name,
+      email,
+      phone,
+      designation,
+      password: hashedPassword, // Save the hashed password
+      normalpassword: password, // Save the original password
+      employes: employeeData, // Convert to JSON string for database storage
+    });
+
+    return res.redirect("/getDeptHeads");
+
+    // res.render('/addheads')
+  } catch (error) {
+    console.error("Error saving department head:", error);
+    res.status(500).send({
+      message: "Error saving department head",
+      error: error.message,
+    });
+  }
+};
+
+export const getDeptHeads = async (req, res) => {
+  try {
+    let deptHeads = await Head.findAll();
+
+    if (!deptHeads || deptHeads.length === 0) {
+      // return res.status(404).json({ message: "No department heads found" });
+      deptHeads = [];
+    }
+
+    // res.status(200).json({
+    //     message: 'Departments and employees retrieved successfully',
+    //     data: deptHeads
+    // });
+
+    res.render("headlist_emply", { data: deptHeads });
+  } catch (error) {
+    console.error("Error fetching department heads:", error);
+    res.status(500).send({
+      message: "Error fetching department heads",
+      error: error.message,
+    });
+  }
 };
 
 export const AdminWalletPage = async (req, res) => {

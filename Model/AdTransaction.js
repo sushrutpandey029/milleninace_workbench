@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../Database/MySql_connection.js";
 
-const AdminWallet = sequelize.define(
+const AdTransactionModel = sequelize.define(
   "ad_transaction",
   {
     id: {
@@ -19,7 +19,7 @@ const AdminWallet = sequelize.define(
     },
     dept_from: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false, 
     },
     ad_on: {
       type: DataTypes.STRING,
@@ -40,4 +40,4 @@ const AdminWallet = sequelize.define(
   }
 );
 
-export default AdminWallet;
+export default AdTransactionModel;

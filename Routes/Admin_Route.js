@@ -4,6 +4,8 @@ import {
   AdminRegister,
   Admin_login,
   AdminLogin,
+  saveDeptHead,
+  getDeptHeads,
   Admindashboard,
   AdminLogout,
   Admin_Wallet,
@@ -15,14 +17,16 @@ import {
 } from "../Controller/Admin_Cntrl.js";
 
 import {
-  saveDeptHead,
   addhead,
-  getDeptHeads,
   head_login,
   HeadLogin,
   headnewdashboard,
   ProjectTransactionPage,
-  ProjectTransaction
+  ProjectTransaction,
+  SalaryTransactionPage,
+  SalaryTransactions,
+  AdTransactionPage,
+  AdTransaction
 } from "../Controller/Head_Controller.js";
 
 import { isAuthenticated } from "../Middlewares/isAuthenticated.js"; // Adjust path if necessary
@@ -61,6 +65,10 @@ router.get("/getDeptHeads", getDeptHeads);
 
   router.get("/project-transaction",ProjectTransactionPage)
   router.post("/project-transaction",ProjectTransaction)
+  router.get("/salary-transaction",SalaryTransactionPage)
+  router.post("/salary-transaction",SalaryTransactions)
+  router.get("/ad-transaction",AdTransactionPage)
+  router.post("/ad-transaction",AdTransaction)
 
 
 export default router;

@@ -7,6 +7,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import DepartmentWallet from "../Model/DepartmentWallet .js";
 import TransactionRecord from "../Model/TransactionRecord.js";
+import SalaryTransaction from "../Model/SalaryTransaction.js";
+import AdTransactionModel from "../Model/AdTransaction.js";
 import { where } from "sequelize";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -16,100 +18,11 @@ export const head_login = async (req, res) => {
   res.render("headlogin");
 };
 
-export const saveDeptHead = async (req, res) => {
-  try {
-    const {
-      department,
-      dept_head_name,
-      email,
-      phone,
-      designation,
-      password,
-      employes,
-    } = req.body;
-
-    // Validate required fields
-    if (
-      !department ||
-      !dept_head_name ||
-      !email ||
-      !phone ||
-      !designation ||
-      !password
-    ) {
-      req.flash("error", "All fields are required");
-    }
-
-    // Validate email format
-    if (!validator.isEmail(email)) {
-      req.flash("error", "Invalid email format");
-    }
-
-    // Validate phone format (e.g., 10-digit Indian phone number)
-    const phoneRegex = /^[6-9]\d{9}$/;
-    if (!phoneRegex.test(phone)) {
-      req.flash(
-        "error",
-        "Invalid phone number. It should be a 10-digit number starting with 6-9."
-      );
-    }
-
-    const employeeData = employes ? employes : [];
-
-    // Hash password before saving
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Save the department head and employees
-    const newDeptHead = await Head.create({
-      department,
-      dept_head_name,
-      email,
-      phone,
-      designation,
-      password: hashedPassword, // Save the hashed password
-      normalpassword: password, // Save the original password
-      employes: employeeData, // Convert to JSON string for database storage
-    });
-
-    return res.redirect("/getDeptHeads");
-
-    // res.render('/addheads')
-  } catch (error) {
-    console.error("Error saving department head:", error);
-    res.status(500).send({
-      message: "Error saving department head",
-      error: error.message,
-    });
-  }
-};
-
 export const addhead = async (req, res) => {
   res.render("addheads");
 };
 
-export const getDeptHeads = async (req, res) => {
-  try {
-    const deptHeads = await Head.findAll();
 
-    if (!deptHeads || deptHeads.length === 0) {
-      return res.status(404).json({ message: "No department heads found" });
-    }
-
-    // res.status(200).json({
-    //     message: 'Departments and employees retrieved successfully',
-    //     data: deptHeads
-    // });
-
-    res.render("headlist_emply", { data: deptHeads });
-  } catch (error) {
-    console.error("Error fetching department heads:", error);
-    res.status(500).send({
-      message: "Error fetching department heads",
-      error: error.message,
-    });
-  }
-};
 
 export const HeadLogin = async (req, res) => {
   try {
@@ -177,7 +90,6 @@ export const headnewdashboard = async (req, res) => {
       req.flash("error", "Please log in to continue");
       return res.redirect("/");
     }
-    console.log("newuser", newuser);
     const id = newuser.id;
 
     const userdata = await DepartmentWallet.findOne({
@@ -186,13 +98,15 @@ export const headnewdashboard = async (req, res) => {
       order: [["id", "DESC"]],
     });
 
-    const totalwallet = userdata.dataValues.total_balance;
+    const totalwallet = userdata?.dataValues?.total_balance || 0.0;
 
-    // Pass user data to the view 
+    // Pass user data to the view
     res.render("headdashboard", { newuser, totalwallet });
   } catch (error) {
     console.error("Error in Admindashboard:", error);
-    return res.status(500).send("Internal Server Error");
+    return res
+      .status(500)
+      .send({ message: "Internal Server Error", err: error.message });
   }
 };
 
@@ -217,44 +131,44 @@ export const ProjectTransaction = async (req, res) => {
     const dept_from = req.session.user.dept_name;
 
     // taking department to if from department head table
-    const id =await Head.findOne({
-      attributes:["id"],
-      where:{department:dept_to}
-    })
+    const id = await Head.findOne({
+      attributes: ["id"],
+      where: { department: dept_to },
+    });
 
     const dept_to_id = id.dataValues.id;
 
-    //fetching total balance of departfrom 
+    //fetching total balance of departfrom
 
-    const deptFrom =await DepartmentWallet.findOne({
-      attributes:["id","total_balance"],
-      where:{department_id :dept_from_id },
-      order:[["id","DESC"]]
-    })
+    const deptFrom = await DepartmentWallet.findOne({
+      attributes: ["id", "total_balance"],
+      where: { department_id: dept_from_id },
+      order: [["id", "DESC"]],
+    });
 
-    console.log("deptFrom",deptFrom);
+    console.log("deptFrom", deptFrom);
 
-   let deptFrom_totalBalance = deptFrom.dataValues.total_balance || 0;
-   let deptFrom_id = deptFrom.dataValues.id;
+    let deptFrom_totalBalance = deptFrom.dataValues.total_balance || 0;
+    let deptFrom_id = deptFrom.dataValues.id;
 
-   //fetching total balance of department to  
+    //fetching total balance of department to
 
-   const deptTo =await DepartmentWallet.findOne({
-    attributes:["id","total_balance"],
-    where:{department_id :dept_to_id },
-    order:[["id","DESC"]]
-  })
+    const deptTo = await DepartmentWallet.findOne({
+      attributes: ["id", "total_balance"],
+      where: { department_id: dept_to_id },
+      order: [["id", "DESC"]],
+    });
 
- let deptTo_totalBalance = deptTo.dataValues.total_balance || 0;
- let deptTo_id = deptTo.dataValues.id;
+    let deptTo_totalBalance = deptTo.dataValues.total_balance || 0;
+    let deptTo_id = deptTo.dataValues.id;
 
- console.log("deptFrom_totalBalance",deptFrom_totalBalance);
- console.log("deptTo_totalBalance",deptTo_totalBalance);
+    console.log("deptFrom_totalBalance", deptFrom_totalBalance);
+    console.log("deptTo_totalBalance", deptTo_totalBalance);
 
- //handling the logic to subtract and add wallet value
+    //handling the logic to subtract and add wallet value
 
- deptFrom_totalBalance = deptFrom_totalBalance - amount;
- deptTo_totalBalance = parseFloat(deptTo_totalBalance) + parseFloat(amount);
+    deptFrom_totalBalance = deptFrom_totalBalance - amount;
+    deptTo_totalBalance = parseFloat(deptTo_totalBalance) + parseFloat(amount);
 
     const data = new TransactionRecord({
       project_name,
@@ -277,22 +191,184 @@ export const ProjectTransaction = async (req, res) => {
 
     // updating the wallet of both user sender and receiver
 
-     await DepartmentWallet.update(
-     {total_balance : deptTo_totalBalance},
-     { where:{id : deptTo_id}},
-    )
+    await DepartmentWallet.update(
+      { total_balance: deptTo_totalBalance },
+      { where: { id: deptTo_id } }
+    );
 
     await DepartmentWallet.update(
-      {total_balance : deptFrom_totalBalance},
-      { where:{id : deptFrom_id}},
-     )
-
+      { total_balance: deptFrom_totalBalance },
+      { where: { id: deptFrom_id } }
+    );
 
     res.redirect("/headnewdashboard");
   } catch (err) {
     console.log("err in ProjectTransaction", err.message);
     return res.status(500).send({
       message: "Internal server error",
+      err: err.message,
+    });
+  }
+};
+
+export const SalaryTransactionPage = async (req, res) => {
+  try {
+    return res.render("salaryTransaction");
+  } catch (err) {
+    console.log("err in salary transaction page", err.message);
+    return res.status(500).send({
+      message: "Internal server error",
+      err: err.message,
+    });
+  }
+};
+
+export const SalaryTransactions = async (req, res) => {
+  try {
+    const { dept, dept_head_name, employee, salary, salary_date } = req.body;
+
+    if (!dept || !dept_head_name || !employee || !salary || !salary_date) {
+      return req.flash("err", "all fields are required.");
+    }
+
+    const dept_id = req.session.user.id;
+
+    const dept_wallet = await DepartmentWallet.findOne({
+      attributes: ["id", "total_balance"],
+      where: { department_id: dept_id },
+      order: [["id", "DESC"]],
+    });
+
+    const id = dept_wallet.dataValues.id;
+    let dept_totalBalance = dept_wallet.dataValues.total_balance;
+
+    //subtracting total balance from department wallet
+
+    dept_totalBalance = parseFloat(dept_totalBalance) - salary;
+
+    console.log("total balance dept", dept_totalBalance);
+
+    // updating total balance in department wallet
+    await DepartmentWallet.update(
+      { total_balance: dept_totalBalance },
+      { where: { id: id } }
+    );
+
+    const data = new SalaryTransaction({
+      dept_id,
+      dept,
+      dept_head_name,
+      employee,
+      salary,
+      salary_date,
+    });
+
+    const response = await data.save();
+
+    if (!response) {
+      return res.status(500).send({
+        message: "error in saving in database, please try again",
+      });
+    }
+
+    return res.redirect("/headnewdashboard");
+  } catch (err) {
+    return res.status(500).send({
+      message: "Internal server error",
+      err: err.message,
+    });
+  }
+};
+
+export const AdTransactionPage = async (req, res) => {
+  try {
+    return res.render("adTransaction");
+  } catch (err) {
+    return res.status(500).send({
+      message: "internal server error",
+      err: err.message,
+    });
+  }
+};
+
+export const AdTransaction = async (req, res) => {
+  try {
+    const { dept_to, ad_on, amount, date } = req.body;
+
+    if (!dept_to || !ad_on || !amount || !date) {
+      return req.flash("err", "all fields are required.");
+    }
+
+    //fetching id of destination department from Department head table
+    const dept = await Head.findOne({
+      attributes: ["id"],
+      where: { department: dept_to },
+    });
+
+    const dept_to_id = dept.dataValues.id;
+
+    //fetching data from session
+    const dept_from = req.session.user.dept_name;
+    const dept_from_id = req.session.user.id;
+
+    const data = new AdTransactionModel({
+      dept_to_id,
+      dept_to,
+      dept_from,
+      ad_on,
+      amount,
+      date,
+    });
+
+    const response = await data.save();
+
+    if (!response) {
+      return req.status(500).send({
+        message: "internal server error",
+      });
+    }
+
+    //deduction transfer amount from source department wallet
+
+    const dept_wallet = await DepartmentWallet.findOne({
+      attributes: ["id", "total_balance"],
+      where: { department_id: dept_from_id },
+      order: [["id", "DESC"]],
+    });
+
+    let dept_totalBalance = dept_wallet?.dataValues?.total_balance || 0.0;
+    dept_totalBalance = parseFloat(dept_totalBalance) - amount;
+    let dept_id = dept_wallet.dataValues.id;
+
+    // updating the source department wallet
+    await DepartmentWallet.update(
+      { total_balance: dept_totalBalance },
+      { where: { id: dept_id } }
+    );
+
+    //adding amount to destination department wallet
+    const dept_to_wallet = await DepartmentWallet.findOne({
+      attributes: ["id", "total_balance"],
+      where: { department_id: dept_to_id },
+      order: [["id", "DESC"]],
+    });
+
+    let dept_to_totalBalance = dept_to_wallet?.dataValues?.total_balance || 0.0;
+    dept_to_totalBalance =
+      parseFloat(dept_to_totalBalance) + parseFloat(amount);
+
+    await DepartmentWallet.update(
+      { total_balance: dept_to_totalBalance },
+      { where: { id: dept_to_wallet.dataValues.id } }
+    );
+
+    console.log("updated-dept_to_totalBalance", dept_to_totalBalance);
+    req.flash("success", "data submitted successfully.");
+
+    return res.redirect("/headnewdashboard");
+  } catch (err) {
+    return res.status(500).send({
+      message: "internal server error",
       err: err.message,
     });
   }

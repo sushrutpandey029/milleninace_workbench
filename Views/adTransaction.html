@@ -8,7 +8,7 @@
             <div class="d-flex align-items-center">
                 <a class="invoiceapp-title link-dark" data-bs-toggle="dropdown" href="#" role="button"
                     aria-haspopup="true" aria-expanded="false">
-                    <h1>Project Transaction</h1>
+                    <h1>Ad Transaction</h1>
 
                     {{#if error}}
                         {{#each error}}
@@ -37,43 +37,45 @@
             </div>
         </header>
         <br>
-        <form id="deptForm" action="/project-transaction" method="post">
+        <form id="deptForm" action="/ad-transaction" method="post">
 
-             <!-- Project Name -->
-             <div class="mb-3">
-                <label for="project_name" class="form-label">Project Name</label>
-                <input type="text" class="form-control" id="project_name" name="project_name" required>
-            </div>
 
-            <!-- Department To -->
+            <!-- Department -->
             <div class="mb-3">
                 <label for="dept_to" class="form-label">Department</label>
                 <select class="form-select" id="dept_to" name="dept_to" required>
-                    <option value="" disabled selected>Select Department</option>
+                    <option value="" disabled selected>Select department</option>
                     <option value="Software Development">Software Development</option>
                     <option value="Website Development">Website Development</option>
                     <option value="E-commerce Development">E-commerce Development</option>
                     <option value="Mobile Development">Mobile Development</option>
+                    <option value="Sales">Sales</option>
                 </select>
             </div>
 
-            <!-- Purpose -->
-            <div class="mb-3">
-                <label for="purpose" class="form-label">Purpose</label>
-                <input type="text" class="form-control" id="purpose" name="purpose" required>
-            </div>
+           <!-- Ad on -->
+           <div class="mb-3">
+            <label for="ad_on" class="form-label">Ad on</label>
+            <select class="form-select" id="ad_on" name="ad_on" required>
+                <option value="" disabled selected>Select platform</option>
+                <option value="Google Ad">Google Ad</option>
+                <option value="Instagram Ad">Instagram Ad</option>
+                <option value="Facebook Ad">Facebook Ad</option>
+            </select>
+        </div>
 
-            <!-- amount -->
+            <!-- Amount -->
             <div class="mb-3">
                 <label for="amount" class="form-label">Amount</label>
-                <input type="number" class="form-control" id="amount" name="amount" required>
+                <input type="text" class="form-control" id="amount" name="amount" required>
             </div>
 
-            <!-- Transaction Date -->
+            <!-- Date -->
             <div class="mb-3">
-                <label for="transaction_date" class="form-label">transaction date</label>
-                <input type="date" class="form-control" id="transaction_date" name="transaction_date" required>
+                <label for="date" class="form-label">Date</label>
+                <input type="date" class="form-control" id="date" name="date" required>
             </div>
+
 
             <!-- Submit Button -->
             <button type="submit" class="btn btn-primary mt-3">Submit</button>
