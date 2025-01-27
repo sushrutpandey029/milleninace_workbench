@@ -8,6 +8,7 @@ import sequelize from "./Database/MySql_connection.js";
 import route from "./Routes/Admin_Route.js";
 import { fileURLToPath } from "url";
 import { EventEmitter } from "events";
+import mysql from "mysql2"; // Import mysql2
 import flash from "connect-flash";
 
 // Increase the max listeners to prevent warnings
@@ -26,34 +27,28 @@ const __dirname = path.dirname(__filename);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Configure MySQL connection pool for session store
+const sessionConnectionPool = mysql.createPool({
+  host: "68.178.173.163",
+  port: 3306,
+  user: "milleniancecom_cidb",
+  password: "HL+9@l8Mfd3w",
+  database: "milleniancecom_cidb",
+  waitForConnections: true,
+  connectionLimit: 10,
+  connectTimeout: 10000,
+  acquireTimeout: 10000,
+});
+
 // Configure session store
 const MySQLStoreSession = MySQLStore(session);
 
 const sessionStore = new MySQLStoreSession(
   {
-    host: "68.178.173.163",
-    port: 3306,
-    user: "milleniancecom_cidb",
-    password: "HL+9@l8Mfd3w",
-    database: "milleniancecom_cidb",
-    checkExpirationInterval: 900000, // 15 minutes
     expiration: 86400000, // 1 day
-    connectionLimit: 10,
-    waitForConnections: true,
-    connectTimeout: 10000,
-    acquireTimeout: 10000,
+    checkExpirationInterval: 900000, // 15 minutes
   },
-  {
-    // Custom table schema for session storage
-    schema: {
-      tableName: "newsession", // Custom table name
-      columnNames: {
-        session_id: "session_id", // Session ID column
-        expires: "expires", // Expiry column
-        data: "data", // Session data column
-      },
-    },
-  }
+  sessionConnectionPool // Use the raw mysql2 connection pool
 );
 
 app.use(
