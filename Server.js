@@ -30,11 +30,11 @@ app.use(express.urlencoded({ extended: true }));
 const MySQLStoreSession = MySQLStore(session);
 
 const sessionStore = new MySQLStoreSession({
-  host: "127.0.0.1",
+   host: '68.178.173.163', 
   port: 3306,
-  user: "root",
-  password: "vivek",
-  database: "Milleniance_Account",
+  user: "milleniancecom_cidb",
+  password: "HL+9@l8Mfd3w",
+  database: "milleniancecom_cidb",
 });
 
 app.use(
