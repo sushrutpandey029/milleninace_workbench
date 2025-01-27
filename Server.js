@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 const MySQLStoreSession = MySQLStore(session);
 
 const sessionStore = new MySQLStoreSession({
-   host: '68.178.173.163', 
+  host: "68.178.173.163",
   port: 3306,
   user: "milleniancecom_cidb",
   password: "HL+9@l8Mfd3w",
@@ -55,20 +55,21 @@ app.use(flash());
 
 // Middleware to pass flash messages to views
 app.use((req, res, next) => {
-    res.locals.successMessage = req.flash("success");
-    res.locals.errorMessage = req.flash("error");
-    next();
+  res.locals.successMessage = req.flash("success");
+  res.locals.errorMessage = req.flash("error");
+  next();
 });
 
 // Set up the view engine
 app.set("view engine", "html");
 app.engine("html", hbs.__express);
 
-app.set("Views", path.join(__dirname, "Views"));
-// Static files
-app.use(express.static(path.join(__dirname, 'Views', 'public', 'assets')));
+// Ensure correct views directory
+app.set("views", path.join(__dirname, "Views"));
 
-hbs.registerPartials(path.join(__dirname, 'Views','commonTemplate'));
+// Static files
+app.use(express.static(path.join(__dirname, "Views", "public", "assets")));
+hbs.registerPartials(path.join(__dirname, "Views", "commonTemplate"));
 
 app.use("/images", express.static(path.join(__dirname, "Views", "public", "images")));
 
@@ -85,7 +86,7 @@ const startServer = () => {
       });
     })
     .catch((err) => {
-      console.error("MySQL connection failed:", err);
+      console.error("MySQL connection failed. Error details:", err);
     });
 };
 
