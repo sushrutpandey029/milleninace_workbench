@@ -29,11 +29,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // Configure MySQL connection pool for session store
 const sessionConnectionPool = mysql.createPool({
-  host: "68.178.173.163",
+  host: "127.0.0.1",
   port: 3306,
-  user: "milleniancecom_cidb",
-  password: "HL+9@l8Mfd3w",
-  database: "milleniancecom_cidb",
+  user: "root",
+  password: "vivek",
+  database: "milleniance_account",
   waitForConnections: true,
   connectionLimit: 10,
   connectTimeout: 10000,
@@ -85,6 +85,7 @@ app.use("/css", express.static(path.join(__dirname, "Views", "public", "assets",
 // Static files
 app.use(express.static(path.join(__dirname, "Views", "public", "assets")));
 hbs.registerPartials(path.join(__dirname, "Views", "commonTemplate"));
+
 app.use("/images", express.static(path.join(__dirname, "Views", "public", "assets", "images"))); // Serve images
 app.use("/js", express.static(path.join(__dirname, "Views", "public", "assets", "js"))); // Serve JS files
 app.use("/images", express.static(path.join(__dirname, "Views", "public", "images")));

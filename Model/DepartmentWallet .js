@@ -9,6 +9,10 @@ const DepartmentWallet = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
+    project_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false
+    },
     department_id: {
       type: DataTypes.INTEGER,
       allowNull: false,

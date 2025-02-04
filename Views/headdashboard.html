@@ -7,15 +7,36 @@
         <!-- Header Section -->
         <div class="row mt-4">
             <div class="col-12 text-center">
-                <h1>Head Dashboard</h1>
+                <h1>Department Dashboard</h1>
             </div>
         </div>
 
-        <!-- Placeholder Content -->
-        <div class="row mt-4">
-            <div class="col-12 text-center">
-                <p>Welcome to the Admin Dashboard. Use the links above to manage farmers, users, field officers, and project coordinators.</p>
-            </div>
+        <!-- Table Content -->
+        <div class="col-sm-12 table-responsive">
+            <table id="table_id" class="table table-bordered">
+                <thead>
+                    <th>Project</th>
+                    <th>Client</th>
+                    <th>Amount</th>
+                   
+                </thead>
+                <tbody>
+                    <!-- {{#if projects.length}} -->
+                        {{#each projects}}
+                            <tr>
+                                <td>{{project_name}}</td>
+                                <td>{{client}}</td>
+                                <td>{{total_amount}}</td>
+                            </tr>
+                        {{/each}}
+                        <!-- {{else}}
+                        <tr>
+                            <td colspan="9" class="text-center">no data available.</td>
+                        </tr>
+                        {{/if}} -->
+                </tbody>
+            </table>
+            
         </div>
     </div>
 </div>

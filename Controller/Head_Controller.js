@@ -10,6 +10,7 @@ import TransactionRecord from "../Model/TransactionRecord.js";
 import SalaryTransaction from "../Model/SalaryTransaction.js";
 import AdTransactionModel from "../Model/AdTransaction.js";
 import { where } from "sequelize";
+import ProjectModel from "../Model/ProjectModel.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,8 +63,6 @@ export const HeadLogin = async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    console.log("user-headlogin", user);
-
     // Store user info in session
     req.session.user = {
       id: user.id,
@@ -73,6 +72,15 @@ export const HeadLogin = async (req, res) => {
       token,
       refreshToken: user.refreshToken,
     };
+
+    //fetching project id from department wallet using department name
+    // const response = await DepartmentWallet.findAll({
+    //   attributes:["project_id"],
+    //   where:{department_name:req.session.user.dept_name}
+    // });
+
+    // console.log("project-id",response);
+
 
     // Redirect to the dashboard
     return res.redirect("/headnewdashboard");
@@ -100,8 +108,15 @@ export const headnewdashboard = async (req, res) => {
 
     const totalwallet = userdata?.dataValues?.total_balance || 0.0;
 
+    let projects = await ProjectModel.findAll({
+      where:{assigned_Dept:req.session.user.dept_name}
+    })
+
+    console.log("projects",projects)
+    
+
     // Pass user data to the view
-    res.render("headdashboard", { newuser, totalwallet });
+    res.render("headdashboard", { newuser, totalwallet,projects });
   } catch (error) {
     console.error("Error in Admindashboard:", error);
     return res

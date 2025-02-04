@@ -38,6 +38,7 @@
         </header>
         <br>
         <form id="deptForm" action="/adddeptwallet" method="post">
+
             <!-- Department -->
            
                 <input type="text" class="form-control" id="department_name" name="department_name" value="{{user.department}}" required  hidden>
@@ -48,6 +49,18 @@
             <div class="mb-3">
                 <label for="head_name" class="form-label">Department Head Name</label>
                 <input type="text" class="form-control" id="head_name" name="head_name" value="{{user.dept_head_name}}" required>
+            </div>
+
+            <!-- Project Name -->
+
+            <div class="mb-3">
+                <label for="project_id" class="form-label">Project</label>
+                <select class="form-select" name="project_id">
+                    <option value="">Select Project</option>
+                    {{#each proj_data}}
+                    <option value="{{id}}">{{project_name}}</option>
+                    {{/each}}
+                </select>
             </div>
 
             <!-- amount -->

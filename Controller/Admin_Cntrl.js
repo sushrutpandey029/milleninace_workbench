@@ -4,6 +4,7 @@ import Adminmodel from "../Model/Admin_Model.js";
 import AdminWallet from "../Model/AdminWallet_Model.js";
 import Head from "../Model/Dept.head_Model.js";
 import DepartmentWallet from "../Model/DepartmentWallet .js";
+import ProjectModel from "../Model/ProjectModel.js";
 
 import validator from "validator"; // Install this package: npm install validator
 
@@ -322,7 +323,18 @@ export const PayDeptPage = async (req, res) => {
   try {
     const { id } = req.params;
     const user = await Head.findByPk(id);
-    res.render("pay_dept", { user });
+    // console.log("user-paydept",user);
+
+    const department = user.dataValues.department;
+    console.log("departmet",department)
+
+    const proj_data = await ProjectModel.findAll(
+      {where:{assigned_Dept:department}}
+    )
+
+    console.log("response",proj_data);  
+
+    res.render("pay_dept", { user,proj_data });
   } catch (err) {
     console.log("err in admin wallet controller".err);
     return res.status(500).json({
@@ -349,11 +361,11 @@ export const PayDeptPage = async (req, res) => {
 
 export const AddDeptWallet = async (req, res) => {
   try {
-    const { department_id, department_name, head_name, balance } = req.body;
+    const { department_id, department_name, head_name, balance,project_id } = req.body;
 
-    console.log(department_id, department_name, head_name, balance);
+    console.log(department_id, department_name, head_name, balance,project_id);
 
-    if (!head_name || !balance) {
+    if (!head_name || !balance || !project_id) {
       req.flash("error", "all fields are required");
       return;
     }
@@ -393,6 +405,7 @@ export const AddDeptWallet = async (req, res) => {
 
     const data = new DepartmentWallet({
       department_id,
+      project_id,
       department_name,
       total_balance:parsed,
       head_name,
@@ -411,3 +424,57 @@ export const AddDeptWallet = async (req, res) => {
     });
   }
 };
+
+export const AssignProjectPage = async (req, res) => {
+  try{
+    return res.render("assign_project")
+  }catch(err){
+    return res.status(500).send({
+      message:"internal server error",
+      err:err.message
+    })
+  }
+}
+
+export const AssignProject = async (req, res) => {
+  try{
+    const {project_name,client,total_amount,assigned_dept} = req.body;
+
+    if(!project_name || !client || !total_amount || !assigned_dept){
+      return res.flash("error","all fields are required.")
+    }
+
+    const data = new ProjectModel({
+      project_name,client,total_amount,assigned_dept
+    })
+
+    const response = await data.save();
+    if(!response) {
+      return res.flash("error","error in saving to database, please try again.")
+    }
+
+   return res.redirect("/project-list");
+
+  }catch(err){
+    return res.status(500).send({
+      message:"internal server error",
+      err:err.message
+    })
+  }
+}
+
+export const AssignedProjectList =async (req, res) => {
+  try{
+    const data = await ProjectModel.findAll();
+    console.log("data",data)
+    return res.render("assign_project_list",{data});
+  }catch(err){
+    return res.status(500).send({
+      message:"internal server error",
+      err:err.message
+    })
+  }
+}
+
+
+

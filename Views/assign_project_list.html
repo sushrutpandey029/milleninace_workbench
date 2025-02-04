@@ -1,0 +1,53 @@
+{{>header user=user totalBalance=totalBalance}}
+
+{{>verticalnav user=user}}
+
+<div class="hk-pg-wrapper">
+    <div class="container-xxl">
+
+        <header class="invoice-header">
+            <div class="d-flex align-items-center">
+                <a class="invoiceapp-title link-dark" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    <h1>Project Assigned List</h1>
+                </a>
+            </div>
+        </header>
+        <br>
+
+        <!-- Department Head Table -->
+        <div class="col-sm-12 table-responsive">
+            <table id="table_id" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Client</th>
+                        <th>Total Amount</th>
+                        <th>Assigned Department</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#if data.length}}
+                    {{#each data}}
+                        <tr>
+                            <td>{{project_name}}</td>
+                            <td>{{client}}</td>
+                            <td>{{total_amount}}</td>
+                            <td>{{assigned_dept}}</td>
+                            
+                        </tr>
+
+                    
+                    {{/each}}
+                    {{else}}
+                    <tr>
+                        <td colspan="9" class="text-center">no data available.</td>
+                    </tr>
+                    {{/if}}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+{{>footer}}

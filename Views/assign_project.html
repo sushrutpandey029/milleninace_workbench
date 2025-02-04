@@ -1,0 +1,107 @@
+{{>header user=user totalBalance=totalBalance}}
+
+{{>verticalnav user=user}}
+
+<div class="hk-pg-wrapper">
+    <div class="container-xxl">
+        <header class="invoice-header">
+            <div class="d-flex align-items-center">
+                <a class="invoiceapp-title link-dark" data-bs-toggle="dropdown" href="#" role="button"
+                    aria-haspopup="true" aria-expanded="false">
+                    <h1>Project Assignment</h1>
+
+                    {{#if error}}
+                        {{#each error}}
+                            <div class="alert alert-danger" role="alert">
+                                {{this}}
+                            </div>
+                        {{/each}}
+                    {{/if}}
+
+                    {{#if success}}
+                        {{#each success}}
+                            <div class="alert alert-success" role="alert">
+                                {{this}}
+                            </div>
+                        {{/each}}
+                    {{/if}}
+
+                    <script>
+                        window.setTimeout(function () {
+                            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                                $(this).remove();
+                            });
+                        }, 3000);
+                    </script>
+                </a>
+            </div>
+        </header>
+        <br>
+        <form id="deptForm" action="/assign-project" method="post">
+
+            <!-- Project Name -->
+            <div class="mb-3">
+                <label for="project_name" class="form-label">Project Name</label>
+                <input type="text" class="form-control" id="project_name" name="project_name" required>
+            </div>
+
+            <!-- Client -->
+            <div class="mb-3">
+                <label for="client" class="form-label">Client</label>
+                <input type="text" class="form-control" id="client" name="client" required>
+            </div>
+
+            <!-- Total amount -->
+            <div class="mb-3">
+                <label for="total_amount" class="form-label">Total Amount</label>
+                <input type="text" class="form-control" id="total_amount" name="total_amount" required>
+            </div>
+
+            <!-- Department -->
+            <div class="mb-3">
+                <label for="assigned_dept" class="form-label">Assign Department</label>
+                <select class="form-select" id="assigned_dept" name="assigned_dept" required>
+                    <option value="" disabled selected>Select Department</option>
+                    <option value="Software Development">Software Development</option>
+                    <option value="Website Development">Website Development</option>
+                    <option value="E-commerce Development">E-commerce Development</option>
+                    <option value="Mobile Development">Mobile Development</option>
+                    <option value="Sales">Sales</option>
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary mt-3">Submit</button>
+        </form>
+    </div>
+</div>
+
+{{>footer}}
+
+<script>
+    let employeeIndex = 0;
+
+    const addEmployee = () => {
+        const container = document.getElementById("employee-container");
+
+        const div = document.createElement("div");
+        div.classList.add("mb-3", "employee-row");
+
+        div.innerHTML = `
+            <div class="d-flex gap-3">
+                <input type="text" class="form-control" name="employes[${employeeIndex}][name]" placeholder="Employee Name" required>
+                <input type="text" class="form-control" name="employes[${employeeIndex}][designation]" placeholder="Designation" required>
+                <input type="number" class="form-control" name="employes[${employeeIndex}][salary]" placeholder="Salary" required>
+                <input type="date" class="form-control" name="employes[${employeeIndex}][joiningDate]" required>
+                <button type="button" class="btn btn-danger" onclick="removeEmployee(this)">Remove</button>
+            </div>
+        `;
+
+        container.appendChild(div);
+        employeeIndex++;  // Increment index for each new employee
+    };
+
+    const removeEmployee = (button) => {
+        button.closest('.employee-row').remove();
+    };
+</script>
